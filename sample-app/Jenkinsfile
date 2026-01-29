@@ -9,6 +9,15 @@ pipeline {
   GCR_REGION      = credentials('gcr-region')
   IMAGE_ NAME     = "${GCR_REGION}/${GCP_PROJECT}/${APP_NAME}"
   VERSION         = "1.0.${BUILD_NUMBER}"
+
+  // IDs for Global Environment Variables (Set in Jenkins System Config)
+  DEV_URL          = "${env.DEV_SERVER_IP}"
+  TEST_URL         = "${env.TEST_SEVER_IP}"
+  PROD_URL         = "${env.PROD_SERVER_IP}"
+
+  // SSH User and Credential ID
+  SSH_USER        = "ubuntu"
+  SSH_CRED_ID     = "my-ssh-key-id" 
 }
 
 stages {
@@ -46,14 +55,31 @@ stages {
       }
     }
   }
-  stage('Deploy to Dev') {
-     steps {
-         sh """
-         docker stop ${APP_NAME}-dev || true
-         docker rm ${APP_NAME}-dev || true
-         docker run -d --name ${APP_NAME}-dev -p 8081:8080 ${IMAGE_NAME}:${VERSION}
+  // stage('Deploy to Dev') {
+  //    steps {
+  //        sh """
+  //        docker stop ${APP_NAME}-dev || true
+  //        docker rm ${APP_NAME}-dev || true
+  //        docker run -d --name ${APP_NAME}-dev -p 8081:8080 ${IMAGE_NAME}:${VERSION}
          
-     }
+  //    }
+  // }
+  stage('Deploy to Dev') {
+    steps {
+      //Pass URL, environment label, and port to the helper function
+      deployToRemote(env.DEV_URL,'dev','8082')
+    }
+  }
+  stage('Approval for Test') {
+    steps {
+      input message: "Promote to Test environment?"
+    }
+  }   
+  stage('Deploy To Test'){
+    steps {
+      deployToRemote(env.TEST_URL,'test','8080')
+    }
   }
 }
 }
+
