@@ -1,4 +1,4 @@
-pipeline {
+upipeline {
   ageny any
 
   environment   
@@ -36,10 +36,10 @@ stages {
       withCredentials([usernamePAssword(credentialsId: 'nexus-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
         sh ""
         mvn deploy \
-        -DNEXUS_REPO_URL=${NEXUS_URL} \
+        -Dnexus.NEXUS_REPO_URL=${NEXUS_URL} \
         -Dnexus.username=${USER} \
         -Dnexus.password=${PASS} \
-        -Dproject.version=${VERSION} \
+        -Dnexus.version=${VERSION} \
       }
     }
   }
@@ -80,6 +80,17 @@ stages {
       deployToRemote(env.TEST_URL,'test','8080')
     }
   }
+  stage('Approval To Prod'){
+    steps {
+      input.message: "Promote to PRODUCTION?"
+    }
+  }
+  stage('Deploy To PRod') {
+    steps {
+      deployToRemote(env.PROD_URL, 'prod', '8080')
+    }
+  }
 }
 }
+
 
