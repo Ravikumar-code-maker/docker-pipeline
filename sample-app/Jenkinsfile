@@ -1,5 +1,5 @@
-upipeline {
-  ageny any
+pipeline {
+  agent any
 
   environment   
   APP_NAME        = "sample-app"
@@ -33,7 +33,7 @@ stages {
   }
   stage('Publsih to Nexus') {
     steps {
-      withCredentials([usernamePAssword(credentialsId: 'nexus-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+      withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
         sh ""
         mvn deploy \
         -Dnexus.NEXUS_REPO_URL=${NEXUS_URL} \
@@ -48,7 +48,7 @@ stages {
       withcredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
         sh """
         docker build -t ${IAMGE_NAME}:${{VERSION}
-        gcloud auth activate-service-account --key-file=${GCP_KEY}
+        gcloud auth activate-service-account --key-file=${GCP_KEY 
         gcloud auth configure-docker -q
         docker push ${IMAGE_NAME}:${VERSION}
         """
@@ -89,8 +89,25 @@ stages {
     steps {
       deployToRemote(env.PROD_URL, 'prod', '8080')
     }
-  }
+  }                                                        
 }
 }
+
+// DRY Function to handle remote SSH deployment
+def deployToRemote(serverUrl, envName, port) {
+    // Uses the SSH Agent Plugin to provide the private key securely
+    sshagent([env.SSH_CRED_ID]) {
+        sh """
+        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${serverUrl} << 'EOF'
+                    # Commands executed on the remote server
+             docker pull ${IMAGE_NAME}:${BUILD_NUMBER}
+             docker stop ${APP_NAME}-${envName} || true
+             docker rm ${APP_NAME}-${envName} || true
+             docker run -d --name ${APP_NAME}-${envName} -e ENV=${envNAme} -p ${port}:8080 ${IMAGE_NAME}:${BUILD_NUMBER}
+EOF
+            """
+    }
+}
+
 
 
