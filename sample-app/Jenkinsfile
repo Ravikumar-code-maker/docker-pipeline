@@ -1,7 +1,7 @@
 pipeline {
   agent any
 
-  environment   
+  environment {
   APP_NAME        = "sample-app"
           // These IDs must match exactly what you created in Jenkins Credentials Provider
   NEXUS_URL       = credentials('nexus-url')
@@ -108,6 +108,7 @@ EOF
             """
     }
 }
+
 
 
 
