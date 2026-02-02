@@ -84,7 +84,7 @@ stages {
   }
   stage('Approval To Prod'){
     steps {
-      input.message: "Promote to PRODUCTION?"
+      input message: "Promote to PRODUCTION?" // CORRECT
     }
   }
   stage('Deploy To PRod') {
@@ -110,6 +110,7 @@ EOF
             """
     }
 }
+
 
 
 
