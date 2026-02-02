@@ -7,7 +7,7 @@ pipeline {
   NEXUS_URL       = credentials('nexus-url')
   GCP_PROJECT     = credentilas('gcp-project-id')
   GCR_REGION      = credentials('gcr-region')
-  IMAGE_ NAME     = "${GCR_REGION}/${GCP_PROJECT}/${APP_NAME}"
+  IMAGE_NAME      = "${GCR_REGION}/${GCP_PROJECT}/${APP_NAME}"
   VERSION         = "1.0.${BUILD_NUMBER}"
 
   // IDs for Global Environment Variables (Set in Jenkins System Config)
@@ -111,6 +111,7 @@ EOF
             """
     }
 }
+
 
 
 
