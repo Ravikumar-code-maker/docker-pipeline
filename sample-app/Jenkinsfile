@@ -36,12 +36,13 @@ stages {
   stage('Publsih to Nexus') {
     steps {
       withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-        sh ""
+        sh """
         mvn deploy \
         -Dnexus.NEXUS_REPO_URL=${NEXUS_URL} \
         -Dnexus.username=${USER} \
         -Dnexus.password=${PASS} \
         -Dnexus.version=${VERSION} \
+        """
       }
     }
   }
@@ -110,6 +111,7 @@ EOF
             """
     }
 }
+
 
 
 
