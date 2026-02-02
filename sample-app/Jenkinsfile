@@ -9,6 +9,7 @@ pipeline {
   GCR_REGION      = credentials('gcr-region')
   IMAGE_NAME      = "${GCR_REGION}/${GCP_PROJECT}/${APP_NAME}"
   VERSION         = "1.0.${BUILD_NUMBER}"
+  
 
   // IDs for Global Environment Variables (Set in Jenkins System Config)
   DEV_URL          = "${env.DEV_SERVER_IP}"
@@ -127,11 +128,12 @@ def deployToRemote(serverUrl, envName, port) {
              docker pull ${IMAGE_NAME}:${BUILD_NUMBER}
              docker stop ${APP_NAME}-${envName} || true
              docker rm ${APP_NAME}-${envName} || true
-             docker run -d --name ${APP_NAME}-${envName} -e ENV=${envNAme} -p ${port}:8080 ${IMAGE_NAME}:${BUILD_NUMBER}
+             docker run -d --name ${APP_NAME}-${envName} -e ENV=${envName} -p ${port}:8080 ${IMAGE_NAME}:${BUILD_NUMBER}
 EOF
             """
     }
 }
+
 
 
 
