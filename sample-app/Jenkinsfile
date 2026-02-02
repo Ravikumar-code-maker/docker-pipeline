@@ -38,7 +38,7 @@ stages {
       withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
         sh """
         mvn deploy \
-        -Dnexus.NEXUS_REPO_URL=${NEXUS_URL} \
+        -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
         -Dnexus.username=${USER} \
         -Dnexus.password=${PASS} \
         -Dnexus.version=${VERSION} \
@@ -126,6 +126,7 @@ EOF
             """
     }
 }
+
 
 
 
