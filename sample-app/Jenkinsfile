@@ -28,7 +28,9 @@ stages {
   }
   stage('Build & Test') {
     steps {
-      sh "mvn clean package -DskipTests"
+      dir('sample-app') {
+        sh "mvn clean package -DskipTests" 
+      }
     }
   }
   stage('Publsih to Nexus') {
@@ -108,6 +110,7 @@ EOF
             """
     }
 }
+
 
 
 
