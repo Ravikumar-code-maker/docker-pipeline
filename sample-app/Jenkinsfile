@@ -54,7 +54,7 @@ stages {
 
   stage('Docker Build & PUSH') {
     steps {
-      withcredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
+      withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
         sh """
         docker build -t ${IMAGE_NAME}:${VERSION}
         gcloud auth activate-service-account --key-file=${GCP_KEY} 
@@ -132,6 +132,7 @@ EOF
             """
     }
 }
+
 
 
 
