@@ -96,6 +96,21 @@ stages {
 }
 }
 
+post {
+  always {
+    //cleans the jenkines workspace to save disk space 
+    cleanWS()
+    echo "Workspace cleaned successfully."
+  }
+  success {
+    echo "Pipeline completed successfully! Version ${VERSION} is deployed."
+  }
+  failure {
+    //Helpful for debugging: prints the last few lines of the log
+    echo "Pipeline Failed.Check the logs above for errors."
+  }
+}
+
 // DRY Function to handle remote SSH deployment
 def deployToRemote(serverUrl, envName, port) {
     // Uses the SSH Agent Plugin to provide the private key securely
@@ -111,6 +126,7 @@ EOF
             """
     }
 }
+
 
 
 
