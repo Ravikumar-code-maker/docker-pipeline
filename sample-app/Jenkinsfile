@@ -44,7 +44,6 @@ stages {
         -Dnexus.version=${VERSION} \
         """
       }
-      }
     }
   }
   stage('Docker Build & PUSH') {
@@ -127,6 +126,7 @@ EOF
             """
     }
 }
+
 
 
 
