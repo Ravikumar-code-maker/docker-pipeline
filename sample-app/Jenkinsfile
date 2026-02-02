@@ -34,24 +34,23 @@ stages {
       }
     }
   }
-  stage('Publsih to Nexus') {
+  stage('Publish to Nexus') {
     steps {
       dir('sample-app') {
         withCredentials([usernamePassword(credentialsId: 'nexus-creds', 
                          usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-          // The shell command MUST be inside these curly braces
           sh """
             mvn deploy \
             -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
-            -Dnexus.username=${USER} \
-            -Dnexus.password=${PASS} \
-            -Dnexus.version=${VERSION} \
+            -Dusername=${USER} \
+            -Dpassword=${PASS} \
             -DskipTests
           """
         }
       }
     }
 }
+
 
   stage('Docker Build & PUSH') {
     steps {
@@ -133,6 +132,7 @@ EOF
             """
     }
 }
+
 
 
 
