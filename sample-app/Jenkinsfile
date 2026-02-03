@@ -55,13 +55,13 @@ stages {
       dir('sample-app') {
         // This 'fileId' uses your managed settings file ID: 'nexus-global-settings'
         configFileProvider([configFile(fileId: 'nexus-global-settings', variable: 'MAVEN_SETTINGS')]) {
-          sh """
+          sh '''
             # This uses the secure, pre-configured settings file
             mvn deploy \
             -s ${MAVEN_SETTINGS} \
             -DaltDeploymentRepository=nexus-releases::default::${NEXUS_URL} \
             -DskipTests
-          """
+          '''
         }
       }
     }
@@ -73,12 +73,12 @@ stages {
       // CRITICAL: This moves the current working directory before running docker build
       dir('sample-app') { 
         withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
-          sh """
+          sh '''
           docker build -t ${IMAGE_NAME}:${VERSION} .
           gcloud auth activate-service-account --key-file=${GCP_KEY} 
           gcloud auth configure-docker -q
           docker push ${IMAGE_NAME}:${VERSION}
-        """
+        '''
         }
       }
     }
@@ -87,7 +87,7 @@ stages {
 
   // stage('Deploy to Dev') {
   //    steps {
-  //        sh """
+  //        sh 
   //        docker stop ${APP_NAME}-dev || true
   //        docker rm ${APP_NAME}-dev || true
   //        docker run -d --name ${APP_NAME}-dev -p 8081:8080 ${IMAGE_NAME}:${VERSION}
@@ -153,6 +153,7 @@ EOF
             """
     }
 }
+
 
 
 
