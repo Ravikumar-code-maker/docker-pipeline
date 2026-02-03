@@ -17,7 +17,7 @@ pipeline {
   PROD_URL         = "${env.PROD_SERVER_IP}"
 
   // SSH User and Credential ID
-  SSH_USER        = "raviakira9"
+  SSH_USER        = "raviakira9"       //user to login
   SSH_CRED_ID     = "my-ssh-key-id" 
 }
 
@@ -132,6 +132,7 @@ EOF
             """
     }
 }
+
 
 
 
