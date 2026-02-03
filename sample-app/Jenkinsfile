@@ -34,36 +34,22 @@ stages {
       }
     }
   }
-  stage('Publish to Nexus') {
-    steps {
-      dir('sample-app') {
-        withCredentials([usernamePassword(credentialsId: 'nexus-creds', 
-                         usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-          sh """
-            mvn deploy \
-            -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
-            -Dusername=${USER} \
-            -Dpassword=${PASS} \
-            -DskipTests
-          """
-        }
-      }
-    }
-}
-
-
-  // stage('Docker Build & PUSH') {
-  //   steps {
-  //     withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
-  //       sh """
-  //       docker build -t ${IMAGE_NAME}:${VERSION}
-  //       gcloud auth activate-service-account --key-file=${GCP_KEY} 
-  //       gcloud auth configure-docker -q
-  //       docker push ${IMAGE_NAME}:${VERSION}
-  //       """
-  //     }
-  //   }
-  // }
+//   stage('Publish to Nexus') {
+//     steps {
+//       dir('sample-app') {
+//         withCredentials([usernamePassword(credentialsId: 'nexus-creds', 
+//                          usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+//           sh """
+//             mvn deploy \
+//             -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
+//             -Dusername=${USER} \
+//             -Dpassword=${PASS} \
+//             -DskipTests
+//           """
+//         }
+//       }
+//     }
+// }
   stage('Publish to Nexus') {
     steps {
       dir('sample-app') {
@@ -80,6 +66,21 @@ stages {
       }
     }
 }
+
+
+  stage('Docker Build & PUSH') {
+    steps {
+      withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
+        sh """
+        docker build -t ${IMAGE_NAME}:${VERSION}
+        gcloud auth activate-service-account --key-file=${GCP_KEY} 
+        gcloud auth configure-docker -q
+        docker push ${IMAGE_NAME}:${VERSION}
+        """
+      }
+    }
+  }
+  
 
   // stage('Deploy to Dev') {
   //    steps {
@@ -149,6 +150,7 @@ EOF
             """
     }
 }
+
 
 
 
