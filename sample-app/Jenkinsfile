@@ -70,13 +70,16 @@ stages {
 
   stage('Docker Build & PUSH') {
     steps {
-      withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
-        sh """
-        docker build -t ${IMAGE_NAME}:${VERSION} .
-        gcloud auth activate-service-account --key-file=${GCP_KEY} 
-        gcloud auth configure-docker -q
-        docker push ${IMAGE_NAME}:${VERSION}
+      // CRITICAL: This moves the current working directory before running docker build
+      dir('sample-app') { 
+        withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
+          sh """
+          docker build -t ${IMAGE_NAME}:${VERSION} .
+          gcloud auth activate-service-account --key-file=${GCP_KEY} 
+          gcloud auth configure-docker -q
+          docker push ${IMAGE_NAME}:${VERSION}
         """
+        }
       }
     }
   }
@@ -150,6 +153,7 @@ EOF
             """
     }
 }
+
 
 
 
