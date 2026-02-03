@@ -76,7 +76,7 @@ stages {
           sh '''
           docker build -t ${IMAGE_NAME}:${VERSION} .
           gcloud auth activate-service-account --key-file=${GCP_KEY} 
-          gcloud auth configure-docker -q
+          gcloud auth configure-docker us-central1-docker.pkg.dev -q
           docker push ${IMAGE_NAME}:${VERSION}
         '''
         }
@@ -153,6 +153,7 @@ EOF
             """
     }
 }
+
 
 
 
