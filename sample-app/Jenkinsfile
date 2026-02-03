@@ -7,7 +7,7 @@ pipeline {
   NEXUS_URL       = credentials('nexus-url')
   GCP_PROJECT     = credentials('gcp-project-id')
   GCR_REGION      = credentials('gcr-region')
-  IMAGE_NAME      = "${GCR_REGION}/${GCP_PROJECT}/${APP_NAME}/sample-app"
+  IMAGE_NAME      = "${GCR_REGION}/${GCP_PROJECT}/${APP_NAME}/${APP_NAME}"
   VERSION         = "1.0.${BUILD_NUMBER}"
   
 
@@ -153,6 +153,7 @@ EOF
             """
     }
 }
+
 
 
 
