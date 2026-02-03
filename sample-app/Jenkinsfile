@@ -52,18 +52,35 @@ stages {
 }
 
 
-  stage('Docker Build & PUSH') {
+  // stage('Docker Build & PUSH') {
+  //   steps {
+  //     withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
+  //       sh """
+  //       docker build -t ${IMAGE_NAME}:${VERSION}
+  //       gcloud auth activate-service-account --key-file=${GCP_KEY} 
+  //       gcloud auth configure-docker -q
+  //       docker push ${IMAGE_NAME}:${VERSION}
+  //       """
+  //     }
+  //   }
+  // }
+  stage('Publish to Nexus') {
     steps {
-      withCredentials([file(credentialsId: 'gcr-sa-key', variable: 'GCP_KEY')]) {
-        sh """
-        docker build -t ${IMAGE_NAME}:${VERSION}
-        gcloud auth activate-service-account --key-file=${GCP_KEY} 
-        gcloud auth configure-docker -q
-        docker push ${IMAGE_NAME}:${VERSION}
-        """
+      dir('sample-app') {
+        // This 'fileId' uses your managed settings file ID: 'nexus-global-settings'
+        configFileProvider([configFile(fileId: 'nexus-global-settings', variable: 'MAVEN_SETTINGS')]) {
+          sh """
+            # This uses the secure, pre-configured settings file
+            mvn deploy \
+            -s ${MAVEN_SETTINGS} \
+            -DaltDeploymentRepository=nexus-releases::default::${NEXUS_URL} \
+            -DskipTests
+          """
+        }
       }
     }
-  }
+}
+
   // stage('Deploy to Dev') {
   //    steps {
   //        sh """
@@ -132,6 +149,7 @@ EOF
             """
     }
 }
+
 
 
 
