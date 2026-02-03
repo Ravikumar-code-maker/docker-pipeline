@@ -39,13 +39,13 @@ stages {
 //       dir('sample-app') {
 //         withCredentials([usernamePassword(credentialsId: 'nexus-creds', 
 //                          usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-//           sh """
+//           sh '''
 //             mvn deploy \
 //             -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
 //             -Dusername=${USER} \
 //             -Dpassword=${PASS} \
 //             -DskipTests
-//           """
+//           '''
 //         }
 //       }
 //     }
@@ -153,6 +153,7 @@ EOF
             """
     }
 }
+
 
 
 
