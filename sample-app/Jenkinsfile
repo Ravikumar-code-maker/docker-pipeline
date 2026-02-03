@@ -34,22 +34,37 @@ stages {
       }
     }
   }
+//   stage('Publish to Nexus') {
+//     steps {
+//       dir('sample-app') {
+//         withCredentials([usernamePassword(credentialsId: 'nexus-creds', 
+//                          usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+//           sh """
+//             mvn deploy \
+//             -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
+//             -Dusername=${USER} \
+//             -Dpassword=${PASS} \
+//             -DskipTests
+//           """
+//         }
+//       }
+//     }
+// }
   stage('Publish to Nexus') {
     steps {
       dir('sample-app') {
-        withCredentials([usernamePassword(credentialsId: 'nexus-creds', 
-                         usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+      // 'nexus-global-settings' must be the ID you set in Managed Files
+        configFileProvider([configFile(fileId: 'nexus-global-settings', variable: 'MAVEN_SETTINGS')]) {
           sh """
-            mvn deploy \
-            -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
-            -Dusername=${USER} \
-            -Dpassword=${PASS} \
-            -DskipTests
-          """
+             mvn deploy \
+             -s ${MAVEN_SETTINGS} \
+             -DaltDeploymentRepositoy=nexus-releases::default::${NEXUS_URL} \
+             -DskipTests
+             """
         }
       }
     }
-}
+  }
 
 
   stage('Docker Build & PUSH') {
@@ -132,6 +147,7 @@ EOF
             """
     }
 }
+
 
 
 
