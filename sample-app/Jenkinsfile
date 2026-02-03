@@ -144,15 +144,28 @@ def deployToRemote(serverUrl, envName, port) {
     sshagent([env.SSH_CRED_ID]) {
         sh """
         ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${serverUrl} << 'EOF'
-                    # Commands executed on the remote server
-             docker pull ${IMAGE_NAME}:${BUILD_NUMBER}
+             # 1. Authenticate Docker with Artifact Registry on the remote server
+             # This ensures the remote server has permission to pull from GCP
+             gcloud auth configure-docker us-central1-docker.pkg.dev -q
+
+             # 2. Pull the image using the VERSION (e.g., 1.0.37) instead of just BUILD_NUMBER
+             docker pull ${IMAGE_NAME}:${VERSION}
+
+             # 3. Stop and Remove existing container if it exists
              docker stop ${APP_NAME}-${envName} || true
              docker rm ${APP_NAME}-${envName} || true
-             docker run -d --name ${APP_NAME}-${envName} -e ENV=${envName} -p ${port}:8080 ${IMAGE_NAME}:${BUILD_NUMBER}
+
+             # 4. Run the new container
+             docker run -d --name ${APP_NAME}-${envName} -e ENV=${envName} -p ${port}:8080 ${IMAGE_NAME}:${VERSION}
+
+             # 5. Optional: Clean up dangling images to save space
+             docker image prune -f
 EOF
-            """
+        """
     }
 }
+
+
 
 
 
