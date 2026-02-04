@@ -142,7 +142,7 @@ post {
 def deployToRemote(serverUrl, envName, port) {
     // Uses the SSH Agent Plugin to provide the private key securely
     sshagent([env.SSH_CRED_ID]) {
-        sh """
+        sh '''
         ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${serverUrl} << 'EOF'
              # 1. Authenticate Docker with Artifact Registry on the remote server
              # This ensures the remote server has permission to pull from GCP
@@ -161,9 +161,10 @@ def deployToRemote(serverUrl, envName, port) {
              # 5. Optional: Clean up dangling images to save space
              docker image prune -f
 EOF
-        """
+        '''
     }
 }
+
 
 
 
