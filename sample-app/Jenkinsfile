@@ -139,32 +139,22 @@ post {
 }
 
 def deployToRemote(serverUrl, envName, port) {
-    // 1. Use the ID you set in Jenkins Credentials (e.g., 'my-ssh-key-id')
     sshagent([env.SSH_CRED_ID]) {
         sh """
-        # We use double quotes (""") so Jenkins can read ${serverUrl} and ${port}
-        # We use << 'EOF' (with single quotes) so the REMOTE server handles the rest
         ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${serverUrl} << 'EOF'
-             
-             echo "Connected to ${serverUrl}. Starting deployment for ${envName}..."
-
-             # 1. Authenticate Docker
              gcloud auth configure-docker us-central1-docker.pkg.dev -q
-
-             # 2. Pull the image
-             # Note: These variables must be defined in your environment {} block
+             
              docker pull ${IMAGE_NAME}:${VERSION}
-
-             # 3. Stop and Remove existing container
+             
              docker stop ${APP_NAME}-${envName} || true
              docker rm ${APP_NAME}-${envName} || true
-
-             # 4. Run the new container
+             
              docker run -d --name ${APP_NAME}-${envName} -e ENV=${envName} -p ${port}:8080 ${IMAGE_NAME}:${VERSION}
-
-             # 5. Cleanup
+             
              docker image prune -f
 EOF
         """
     }
 }
+
+
